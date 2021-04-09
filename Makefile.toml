@@ -1,0 +1,41 @@
+[env]
+LAMBDA_RUST_TAG = "0.3.0-rust-1.45.0"
+
+[tasks.build-debug]
+description = "Build for debug"
+script = ['''
+  docker run --rm \
+    -v ${PWD}:/code \
+    -v ${PWD}/.cache/cargo/registry:/root/.cargo/registry \
+    -v ${PWD}/.cache/cargo/git:/root/.cargo/git \
+    -e PROFILE=dev \
+    softprops/lambda-rust:${LAMBDA_RUST_TAG}
+'''
+]
+
+[tasks.run-local]
+description = "run lambda function locally"
+script = [
+  '''
+ unzip -o \
+    target/lambda/debug/${CARGO_MAKE_CRATE_NAME}.zip \
+    -d /tmp/lambda
+  ''',
+  '''
+  cat event.json | \
+  docker run \
+    -i \
+    --env-file=.env \
+    -e DOCKER_LAMBDA_USE_STDIN=1 \
+    -e override_endpoint=http://localstack:${LOCAL_STACK_PORT} \
+    --rm \
+    -v /tmp/lambda:/var/task \
+    --network ${CARGO_MAKE_CRATE_NAME}_default \
+    lambci/lambda:provided 
+  '''
+]
+dependencies = ['build-debug']
+
+[tasks.lint]
+description = 'apply lint'
+script = ['cargo clippy --all-targets --all-features -- -D warnings']

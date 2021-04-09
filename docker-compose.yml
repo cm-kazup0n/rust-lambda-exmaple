@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  localstack:
+    image: localstack/localstack:0.12.8
+    ports:
+      - "${LOCAL_STACK_PORT}:4566"
+    environment:
+     - SERVICES=dynamodb
+    env_file:
+        - .env
+    volumes:
+      - ./localstack/init_scripts:/docker-entrypoint-initaws.d
