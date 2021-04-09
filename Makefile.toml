@@ -1,5 +1,9 @@
 [env]
-LAMBDA_RUST_TAG = "0.3.0-rust-1.45.0"
+LAMBDA_RUST_TAG = "0.4.0-rust-1.51.0"
+
+[tasks.build-lambda-rust-image]
+description = "Build docker image of lambda-rust"
+script = ['pushd lambda-rust', 'make build' ,'popd']
 
 [tasks.build-debug]
 description = "Build for debug"
