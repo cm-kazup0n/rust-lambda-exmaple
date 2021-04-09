@@ -1,0 +1,3 @@
+[submodule "lambda-rust"]
+	path = lambda-rust
+	url = git@github.com:softprops/lambda-rust.git
